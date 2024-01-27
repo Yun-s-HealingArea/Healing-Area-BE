@@ -1,8 +1,13 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
-import { JwtService, TokenExpiredError } from "@nestjs/jwt";
-import { Request } from "express";
-import { ConfigService } from "@nestjs/config";
-import { ErrorMessage } from "../../../common/enum/errormessage.enum";
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { JwtService, TokenExpiredError } from '@nestjs/jwt';
+import { Request } from 'express';
+import { ConfigService } from '@nestjs/config';
+import { ErrorMessage } from '../../../common/enum/errormessage.enum';
 
 @Injectable()
 export class LocalAuthGuard implements CanActivate {
@@ -13,11 +18,13 @@ export class LocalAuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
+    if (!request.headers.authorization)
+      throw new UnauthorizedException([ErrorMessage.UNAUTHORIZED]);
     const token = this.extractTokenFromHeader(request);
     try {
       request['user'] = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get('HEALING_AREA_JWT_SECRET_KEY'),
-      }); 
+      });
     } catch (error) {
       switch (error.constructor) {
         case TokenExpiredError:
