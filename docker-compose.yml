@@ -14,15 +14,15 @@ services:
       - ./data:/var/lib/postgresql/data
       - ./src:/usr/src/app
     restart: always
-  HEALING_AREA-api:
-    build:
-      dockerfile: Dockerfile
-    container_name: HEALING_AREA-api
-    env_file:
-      - .env
-    ports:
-      - "8000:8000"
-    depends_on:
-      - postgresql
+#  HEALING_AREA-api:
+#    build:
+#      dockerfile: Dockerfile
+#    container_name: HEALING_AREA-api
+#    env_file:
+#      - .env
+#    ports:
+#      - "8000:8000"
+#    depends_on:
+#      - postgresql
 
 

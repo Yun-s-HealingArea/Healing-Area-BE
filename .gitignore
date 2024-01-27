@@ -1,6 +1,7 @@
 .env
 .env.local
-
+data
+node_modules
 # compiled output
 /dist
 /node_modules
