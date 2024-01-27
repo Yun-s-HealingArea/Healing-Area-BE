@@ -1,5 +1,6 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, Entity, Index, OneToMany } from 'typeorm';
 import { AbstractEntity } from '../../../common/abstract/abstract.entity';
+import { Boards } from '../../boards/entities/boards.entity';
 
 @Entity()
 @Index(['id', 'email'])
@@ -26,4 +27,7 @@ export class Users extends AbstractEntity {
     name: 'refresh_token',
   })
   refreshToken?: string | null;
+
+  @OneToMany(() => Boards, (boards) => boards.users)
+  boards: Boards[];
 }

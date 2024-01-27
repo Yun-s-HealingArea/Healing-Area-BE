@@ -12,13 +12,13 @@ export class BoardsSeeder implements Seeder {
   ): Promise<any> {
     const boardsFactory = factoryManager.get(Boards);
     const commentsFactory = factoryManager.get(Comments);
-    const postGenerateRepeatTime = 50;
+    const boardsGenerateRepeatTime = 50;
     const commentGenerateRepeatTime = 20;
-    const post = await boardsFactory.saveMany(postGenerateRepeatTime);
+    const boards = await boardsFactory.saveMany(boardsGenerateRepeatTime);
     const generateComment = async () => {
-      for (let i = 0; i < postGenerateRepeatTime; i++) {
+      for (let i = 0; i < boardsGenerateRepeatTime; i++) {
         await commentsFactory.save({
-          post: post[i],
+          board: boards[i],
         });
       }
     };
