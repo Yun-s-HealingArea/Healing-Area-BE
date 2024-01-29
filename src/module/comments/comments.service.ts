@@ -1,26 +1,53 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCommentDTO } from './dto/create-comment.dto';
 import { UpdateCommentDTO } from './dto/update-comment.dto';
+import { CommentsRepository } from './comments.repository';
+import { BoardsService } from '../boards/boards.service';
+import { generateMessageObject } from '../../common/function/generate.message.object.function';
+import { SuccessMessage } from '../../common/enum/successmessage.enum';
+import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class CommentsService {
-  create(createCommentDto: CreateCommentDTO) {
-    return 'This action adds a new comment';
+  constructor(
+    private readonly commentsRepository: CommentsRepository,
+    private readonly boardsService: BoardsService,
+  ) {}
+  async create(createCommentDTO: CreateCommentDTO) {
+    const boards = await this.boardsService.findOne(createCommentDTO.boardsId);
+    console.log(boards);
+    const createdComments = this.commentsRepository.create({
+      description: createCommentDTO.description,
+      boards,
+    });
+    await this.commentsRepository.save(createdComments);
+    return generateMessageObject(SuccessMessage.COMMENT_CREATED);
   }
 
-  findAll() {
-    return `This action returns all comments`;
+  findAll(options: IPaginationOptions) {
+    return paginate(this.commentsRepository, options, {});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} comment`;
+  async findOne(id: number) {
+    return this.commentsRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateCommentDto: UpdateCommentDTO) {
-    return `This action updates a #${id} comment`;
+  async update(id: number, updateCommentDTO: UpdateCommentDTO) {
+    const boards = await this.boardsService.findOne(updateCommentDTO.boardsId);
+    await this.commentsRepository.update(id, {
+      description: updateCommentDTO.description,
+      boards,
+    });
+    return generateMessageObject(SuccessMessage.COMMENT_UPDATED);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} comment`;
+  async remove(id: number) {
+    await this.commentsRepository.softDelete(id);
+    return generateMessageObject(SuccessMessage.COMMENT_DELETED);
+  }
+
+  async restore(id: number) {
+    await this.commentsRepository.restore(id);
+    return generateMessageObject(SuccessMessage.COMMENT_RESTORED);
   }
 }

@@ -4,12 +4,9 @@ import { Boards } from '../../boards/entities/boards.entity';
 
 @Entity()
 export class Comments extends AbstractEntity {
-  @Column({ type: 'varchar', length: 100 })
+  @Column({ type: 'varchar', length: 500 })
   description: string;
 
-  @Column({ type: 'varchar', default: 0 })
-  likes: number;
-
   @ManyToOne(() => Boards, (boards) => boards.comments)
-  board: Boards;
+  boards: Boards;
 }
