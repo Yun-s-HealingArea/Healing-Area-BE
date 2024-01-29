@@ -10,6 +10,7 @@ import { TokenModule } from './module/token/token.module';
 import { BoardsModule } from './module/boards/boards.module';
 import { CommentsModule } from './module/comments/comments.module';
 import { JwtModule } from '@nestjs/jwt';
+import { LikesModule } from './module/likes/likes.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { JwtModule } from '@nestjs/jwt';
     TokenModule,
     BoardsModule,
     CommentsModule,
+    LikesModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
