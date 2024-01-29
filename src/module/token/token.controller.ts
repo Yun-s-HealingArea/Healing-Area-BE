@@ -1,14 +1,12 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { TokenService } from './token.service';
 import { CreateRefreshTokenDTO } from './dto/create-refresh-token.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { LocalAuthGuard } from '../auth/guard/local.auth.guard';
 
 @ApiTags('token')
 @Controller('token')
 export class TokenController {
   constructor(private readonly tokenService: TokenService) {}
-  @UseGuards(LocalAuthGuard)
   @Post('refresh')
   @ApiOperation({
     summary: '액세스 토큰 갱신',
