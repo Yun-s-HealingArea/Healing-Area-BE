@@ -8,4 +8,10 @@ export enum SuccessMessage {
   REFRESH_TOKEN_UPDATED = `Refresh token ${CommonSuccessMessage.UPDATED}`,
   BOARD_CREATED = `Board ${CommonSuccessMessage.CREATED}`,
   BOARD_UPDATED = `Board ${CommonSuccessMessage.UPDATED}`,
+  BOARD_DELETED = `Board ${CommonSuccessMessage.DELETED}`,
+  BOARD_RESTORED = `Board ${CommonSuccessMessage.RESTORED}`,
+  COMMENT_CREATED = `Comment ${CommonSuccessMessage.CREATED}`,
+  COMMENT_UPDATED = `Comment ${CommonSuccessMessage.UPDATED}`,
+  COMMENT_DELETED = `Comment ${CommonSuccessMessage.DELETED}`,
+  COMMENT_RESTORED = `Comment ${CommonSuccessMessage.RESTORED}`,
 }

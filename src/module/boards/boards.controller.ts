@@ -30,25 +30,48 @@ export class BoardsController {
   }
 
   @Get()
-  findAll(@Query() paginateDTO: PaginateDTO) {
+  async findAll(@Query() paginateDTO: PaginateDTO) {
+    paginateDTO.limit = paginateDTO.limit > 100 ? 100 : paginateDTO.limit;
     return this.boardsService.findAll({
       page: paginateDTO.page,
       limit: paginateDTO.limit,
     });
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get('/comments')
+  async allBoardsGetComments(@Query() paginateDTO: PaginateDTO) {
+    paginateDTO.limit = paginateDTO.limit > 100 ? 100 : paginateDTO.limit;
+    return this.boardsService.allBoardsGetComments({
+      page: paginateDTO.page,
+      limit: paginateDTO.limit,
+    });
+  }
+
+  @Get(':boardsId/comments')
+  async getOneBoardsComments(@Param('boardsId') id: string) {
+    return this.boardsService.oneBoardsGetComments(+id);
+  }
+
+  @Get(':boardsId')
+  async findOne(@Param('boardsId') id: string) {
     return this.boardsService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBoardDto: UpdateBoardDTO) {
+  @Patch(':boardsId')
+  async update(
+    @Param('boardsId') id: string,
+    @Body() updateBoardDto: UpdateBoardDTO,
+  ) {
     return this.boardsService.update(+id, updateBoardDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @Delete(':boardsId')
+  async remove(@Param('boardsId') id: string) {
     return this.boardsService.remove(+id);
+  }
+
+  @Post(':boardsId/restore')
+  async restore(@Param('boardsId') id: string) {
+    return this.boardsService.restore(+id);
   }
 }

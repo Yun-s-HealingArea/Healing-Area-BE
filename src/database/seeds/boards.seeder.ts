@@ -18,7 +18,7 @@ export class BoardsSeeder implements Seeder {
     const generateComment = async () => {
       for (let i = 0; i < boardsGenerateRepeatTime; i++) {
         await commentsFactory.save({
-          board: boards[i],
+          boards: boards[i],
         });
       }
     };

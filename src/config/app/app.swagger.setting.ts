@@ -1,7 +1,9 @@
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 export function appSwaggerSetting<T extends INestApplication>(app: T): void {
+  const configService = app.get(ConfigService);
   const config = new DocumentBuilder()
     .setTitle('HEALING_AREA API DOCS')
     .setDescription('HEALING_AREA API 문서 입니다.')
@@ -21,7 +23,12 @@ export function appSwaggerSetting<T extends INestApplication>(app: T): void {
     // )
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api-docs', app, document, {
-    swaggerOptions: { defaultModelsExpandDepth: -1 },
-  });
+  SwaggerModule.setup(
+    configService.get('HEALING_AREA_API_VERSION_PREFIX') + '/api-docs',
+    app,
+    document,
+    {
+      swaggerOptions: { defaultModelsExpandDepth: -1 },
+    },
+  );
 }

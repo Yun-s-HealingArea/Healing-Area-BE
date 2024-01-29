@@ -16,8 +16,8 @@ import { UsersInfoDTO } from '../users/dto/users-info.dto';
 @Injectable()
 export class BoardsService {
   constructor(
-    private boardsRepository: BoardsRepository,
-    private usersService: UsersService,
+    private readonly boardsRepository: BoardsRepository,
+    private readonly usersService: UsersService,
   ) {}
   async create(createBoardDTO: CreateBoardDTO, token: UsersInfoDTO) {
     const users = await this.usersService.findOneByEmail(token.userEmail);
@@ -25,25 +25,52 @@ export class BoardsService {
     const createdBoards = this.boardsRepository.create({
       title: createBoardDTO.title,
       description: createBoardDTO.description,
-      users: users,
+      users,
     });
     await this.boardsRepository.save(createdBoards);
     return generateMessageObject(SuccessMessage.BOARD_CREATED);
   }
 
   async findAll(options: IPaginationOptions): Promise<Pagination<Boards>> {
-    return paginate(this.boardsRepository, options);
+    // TODO: Query 레벨에서 원하는 값을 가져오는 방법을 찾아보자.
+    // const queryBuilder = this.boardsRepository
+    //   .createQueryBuilder('boards')
+    //   .select(
+    //     'boards.id, boards.createdAt, boards.deletedAt, boards.title, SUBSTRING(boards.description, 1, 5) as description,  boards.isPrivate, boards.imageLink',
+    //   )
+    //   .getMany();
+    // console.log(queryBuilder.then((res) => console.log(res)));
+    return paginate(this.boardsRepository, options, {});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} board`;
+  async findOne(id: number) {
+    return this.boardsRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateBoardDto: UpdateBoardDTO) {
-    return `This action updates a #${id} board`;
+  async update(id: number, updateBoardDto: UpdateBoardDTO) {
+    await this.boardsRepository.update(id, updateBoardDto);
+    return generateMessageObject(SuccessMessage.BOARD_UPDATED);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} board`;
+  async remove(id: number) {
+    await this.boardsRepository.softDelete(id);
+    return generateMessageObject(SuccessMessage.BOARD_DELETED);
+  }
+
+  async restore(id: number) {
+    await this.boardsRepository.restore(id);
+    return generateMessageObject(SuccessMessage.BOARD_RESTORED);
+  }
+
+  async oneBoardsGetComments(id: number) {
+    return this.boardsRepository.findOne({
+      where: { id },
+      relations: ['comments'],
+    });
+  }
+  async allBoardsGetComments(options: IPaginationOptions) {
+    return paginate(this.boardsRepository, options, {
+      relations: ['comments'],
+    });
   }
 }

@@ -10,5 +10,6 @@ import { UsersModule } from '../users/users.module';
   imports: [TypeOrmModule.forFeature([Boards]), UsersModule],
   controllers: [BoardsController],
   providers: [BoardsService, BoardsRepository],
+  exports: [BoardsService],
 })
 export class BoardsModule {}
