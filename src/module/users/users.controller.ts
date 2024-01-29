@@ -6,28 +6,30 @@ import {
   Param,
   Patch,
   Post,
-  UseGuards,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { LocalAuthGuard } from '../auth/guard/local.auth.guard';
+import { PaginateDTO } from '../../common/dto/paginate.dto';
 
 @ApiTags('users')
 @Controller('users')
-@UseGuards(LocalAuthGuard)
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
   //TODO: nestjs-typeorm-paginate 적용
-
   @Get()
   @ApiOperation({
     summary: '모든 유저 조회',
     description: '모든 조회 가능한 유저를 조회한다.',
   })
-  async findAll() {
-    return this.userService.findAll();
+  async findAll(@Query() paginateDTO: PaginateDTO) {
+    paginateDTO.limit = paginateDTO.limit > 100 ? 100 : paginateDTO.limit;
+    return this.userService.findAll({
+      page: paginateDTO.page,
+      limit: paginateDTO.limit,
+    });
   }
 
   @Get(':userId')

@@ -1,6 +1,7 @@
 import { Column, Entity, Index, OneToMany } from 'typeorm';
 import { AbstractEntity } from '../../../common/abstract/abstract.entity';
 import { Boards } from '../../boards/entities/boards.entity';
+import { Likes } from '../../likes/entities/likes.entity';
 
 @Entity()
 @Index(['id', 'email'])
@@ -30,4 +31,7 @@ export class Users extends AbstractEntity {
 
   @OneToMany(() => Boards, (boards) => boards.users)
   boards: Boards[];
+
+  @OneToMany(() => Likes, (likes) => likes.users)
+  likes: Likes[];
 }

@@ -7,6 +7,12 @@ import { SuccessMessage } from '../../common/enum/successmessage.enum';
 import { UsersRepository } from './users.repository';
 import { generateMessageObject } from '../../common/function/generate.message.object.function';
 import { LoginDTO } from '../auth/dto/login.dto';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
+import { Users } from './entities/users.entity';
 
 @Injectable()
 export class UsersService {
@@ -29,8 +35,8 @@ export class UsersService {
     return generateMessageObject(SuccessMessage.USER_CREATED);
   }
 
-  async findAll() {
-    return this.userRepository.find();
+  async findAll(options: IPaginationOptions): Promise<Pagination<Users>> {
+    return paginate(this.userRepository, options);
   }
 
   async findOne(userId: number) {
