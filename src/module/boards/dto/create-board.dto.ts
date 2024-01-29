@@ -3,13 +3,13 @@ import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 export class CreateBoardDTO {
   @IsString()
   @IsNotEmpty()
-  title: string;
+  readonly title: string;
 
   @IsString()
   @IsNotEmpty()
-  description: string;
+  readonly description: string;
 
   @IsNumber()
   @IsNotEmpty()
-  userId: number;
+  readonly userId: number;
 }

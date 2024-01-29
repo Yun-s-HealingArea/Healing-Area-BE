@@ -1,4 +1,7 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { PickType } from '@nestjs/mapped-types';
 import { CreateBoardDTO } from './create-board.dto';
 
-export class UpdateBoardDTO extends PartialType(CreateBoardDTO) {}
+export class UpdateBoardDTO extends PickType(CreateBoardDTO, [
+  'title',
+  'description',
+]) {}
