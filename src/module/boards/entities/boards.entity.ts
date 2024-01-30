@@ -20,14 +20,14 @@ export class Boards extends AbstractEntity {
   @Column({ type: 'varchar', length: 2000 })
   description: string;
 
-  @Column({ name: 'image_link', type: 'varchar', nullable: true })
-  imageLink: string;
+  @Column({ name: 'image_file_name', type: 'varchar', nullable: true })
+  imageFileName: string;
 
   @Column({ name: 'is_private', type: 'boolean', default: false })
   isPrivate: boolean;
 
-  @Column({ type: 'varchar', default: 'TODO' })
-  status: string;
+  @Column({ name: 'board_status', type: 'varchar', default: 0 })
+  boardStatus: number;
 
   @OneToMany(() => Comments, (comments) => comments.boards)
   comments: Comments[];

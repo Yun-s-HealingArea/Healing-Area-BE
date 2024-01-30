@@ -22,6 +22,7 @@ import { UsersInfoDTO } from '../users/dto/users-info.dto';
 import { ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
 import { ImageUploadDTO } from '../upload/dto/image-upload.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { QueryParameterDTO } from '../../common/dto/query.parameter.dto';
 
 @Controller('boards')
 export class BoardsController {
@@ -54,34 +55,34 @@ export class BoardsController {
   }
 
   @Get(':boardsId/comments')
-  async getOneBoardsComments(@Param('boardsId') id: string) {
+  async getOneBoardsComments(@Param('boardsId') id: QueryParameterDTO) {
     return this.boardsService.oneBoardsGetComments(+id);
   }
 
   @Get(':boardsId')
-  async findOne(@Param('boardsId') id: string) {
+  async findOne(@Param('boardsId') id: QueryParameterDTO) {
     return this.boardsService.findOne(+id);
   }
 
   @Patch(':boardsId')
   async update(
-    @Param('boardsId') id: string,
+    @Param('boardsId') id: QueryParameterDTO,
     @Body() updateBoardDto: UpdateBoardDTO,
   ) {
     return this.boardsService.update(+id, updateBoardDto);
   }
 
   @Delete(':boardsId')
-  async remove(@Param('boardsId') id: string) {
+  async remove(@Param('boardsId') id: QueryParameterDTO) {
     return this.boardsService.remove(+id);
   }
 
   @Post(':boardsId/restore')
-  async restore(@Param('boardsId') id: string) {
+  async restore(@Param('boardsId') id: QueryParameterDTO) {
     return this.boardsService.restore(+id);
   }
 
-  @ApiOperation({ summary: '게시글 작성, 수정 시 이미지 업로드' })
+  @ApiOperation({ summary: '그림 완성시 그림 업로드' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: '업로드할 파일',
@@ -89,8 +90,17 @@ export class BoardsController {
   })
   @UseInterceptors(FileInterceptor('file'))
   @HttpCode(200)
-  @Post('image')
-  async saveImage(@UploadedFile() file: Express.Multer.File) {
-    return this.boardsService.imageUpload(file);
+  @Post(':boardsId/image')
+  async saveImage(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('boardsId') id: QueryParameterDTO,
+  ) {
+    const imageFileName = await this.boardsService.imageUpload(file);
+    return this.boardsService.imageURLToDB(+id, imageFileName);
   }
+  //
+  // @Get(':boardsId/image/presigned_url'))
+  // async getPresignedURL(@Param('boardsId') id: string) {
+  //   return this.boardsService.getPresignedURL(+id);
+  // }
 }
