@@ -75,6 +75,10 @@ export class UsersController {
   }
 
   @Post('restore/:userId')
+  @ApiOperation({
+    summary: '유저 정보 복구',
+    description: 'param으로 들어온 userId에 해당하는 유저의 정보를 복구한다',
+  })
   async restore(@Param('userId') userId: string) {
     return this.userService.restore(+userId);
   }
