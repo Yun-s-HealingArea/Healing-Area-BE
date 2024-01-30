@@ -1,9 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 @Injectable()
 export class UploadService {
+  // UploadService 인스턴스가 생성 될 때 AWS S3 클라이언트를 초기화 해버림.
   s3Client: S3Client;
 
   constructor(private configService: ConfigService) {
@@ -18,6 +24,7 @@ export class UploadService {
   }
 
   async imageUploadToS3(
+    folderName: string, // 폴더 이름
     fileName: string, // 파일 이름
     file: Express.Multer.File, // 업로드가 될 파일
     ext: string, // 파일 확장자
@@ -25,12 +32,11 @@ export class UploadService {
     // AWS S3에 이미지 업로드 명령을 생성합니다. 파일 이름, 파일 버퍼, 파일 접근 권한, 파일 타입 등을 설정합니다.
     const command = new PutObjectCommand({
       Bucket: this.configService.get('AWS_S3_BUCKET_NAME'), // S3 버킷 이름
-      Key: fileName, // 업로드될 파일의 이름
+      Key: folderName + fileName, // 업로드될 파일의 이름
       Body: file.buffer, // 업로드할 파일
       // ACL: 'public-read', // 파일 접근 권한
       ContentType: `image/${ext}`, // 파일 타입
     });
-    console.log(command);
 
     // S3 클라이언트에 전달후 이미지 업로드 작업 수행.
     await this.s3Client.send(command);
@@ -41,5 +47,15 @@ export class UploadService {
     )}.amazonaws.com/${this.configService.get(
       'AWS_S3_BUCKET_NAME',
     )}/${fileName}`;
+  }
+
+  async getPresignedURL(folderName: string, fileName: string): Promise<string> {
+    const command = new GetObjectCommand({
+      Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
+      Key: folderName + fileName,
+    });
+    return await getSignedUrl(this.s3Client, command, {
+      expiresIn: this.configService.get('AWS_S3_PRESIGNED_URL_EXPIRES_IN'),
+    });
   }
 }
