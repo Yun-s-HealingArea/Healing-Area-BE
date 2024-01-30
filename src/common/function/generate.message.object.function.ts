@@ -1,4 +1,4 @@
-export function generateMessageObject(message: string) {
+export async function generateMessageObject(message: string) {
   return {
     message,
   };
