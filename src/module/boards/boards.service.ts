@@ -9,15 +9,18 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
+import { v4 as uuid } from 'uuid';
 import { Boards } from './entities/boards.entity';
 import { UsersService } from '../users/users.service';
 import { UsersInfoDTO } from '../users/dto/users-info.dto';
+import { UploadService } from '../upload/upload.service';
 
 @Injectable()
 export class BoardsService {
   constructor(
     private readonly boardsRepository: BoardsRepository,
     private readonly usersService: UsersService,
+    private readonly uploadService: UploadService,
   ) {}
   async create(createBoardDTO: CreateBoardDTO, token: UsersInfoDTO) {
     const users = await this.usersService.findOneByEmail(token.userEmail);
@@ -72,5 +75,15 @@ export class BoardsService {
     return paginate(this.boardsRepository, options, {
       relations: ['comments'],
     });
+  }
+  async imageUpload(file: Express.Multer.File) {
+    const imageName = uuid();
+    const ext = file.originalname.split('.').pop();
+    const imageUrl = await this.uploadService.imageUploadToS3(
+      `${imageName}.${ext}`,
+      file,
+      ext,
+    );
+    return imageUrl;
   }
 }

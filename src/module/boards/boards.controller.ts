@@ -3,11 +3,14 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { BoardsService } from './boards.service';
 import { CreateBoardDTO } from './dto/create-board.dto';
@@ -16,6 +19,9 @@ import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { LocalAuthGuard } from '../auth/guard/local.auth.guard';
 import { UserDataFromJWT } from '../../common/decorator/user.data.from.jwt.decorator';
 import { UsersInfoDTO } from '../users/dto/users-info.dto';
+import { ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
+import { ImageUploadDTO } from '../upload/dto/image-upload.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('boards')
 export class BoardsController {
@@ -73,5 +79,18 @@ export class BoardsController {
   @Post(':boardsId/restore')
   async restore(@Param('boardsId') id: string) {
     return this.boardsService.restore(+id);
+  }
+
+  @ApiOperation({ summary: '게시글 작성, 수정 시 이미지 업로드' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: '업로드할 파일',
+    type: ImageUploadDTO,
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  @HttpCode(200)
+  @Post('image')
+  async saveImage(@UploadedFile() file: Express.Multer.File) {
+    return this.boardsService.imageUpload(file);
   }
 }
