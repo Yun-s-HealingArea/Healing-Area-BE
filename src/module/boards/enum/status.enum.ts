@@ -1,5 +1,5 @@
 export enum BoardsStatus {
-  TODO = 'TODO',
-  INPROGRESS = 'IN PROGRESS',
-  DONE = 'DONE',
+  TODO = 0,
+  INPROGRESS = 1,
+  DONE = 2,
 }
