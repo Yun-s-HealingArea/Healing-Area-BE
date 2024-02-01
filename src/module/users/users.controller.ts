@@ -7,15 +7,17 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { QueryParameterDTO } from '../../common/dto/query.parameter.dto';
 import { generateItemsObject } from '../../common/function/generate.items.object';
 import { ConfigService } from '@nestjs/config';
+import { LocalAuthGuard } from '../auth/guard/local.auth.guard';
 
 @ApiTags('users')
 @Controller('users')
@@ -26,6 +28,8 @@ export class UsersController {
   ) {}
 
   //TODO: nestjs-typeorm-paginate 적용
+  @UseGuards(LocalAuthGuard)
+  @ApiBearerAuth('Authorization')
   @Get()
   @ApiOperation({
     summary: '모든 유저 조회',
@@ -42,6 +46,8 @@ export class UsersController {
     });
   }
 
+  @UseGuards(LocalAuthGuard)
+  @ApiBearerAuth('Authorization')
   @Get(':id')
   @ApiOperation({
     summary: '유저 단일 조회',
@@ -60,6 +66,9 @@ export class UsersController {
   async register(@Body() createUserDto: CreateUserDTO) {
     return this.userService.create(createUserDto);
   }
+
+  @UseGuards(LocalAuthGuard)
+  @ApiBearerAuth('Authorization')
   @Post(':id/restore')
   @ApiOperation({
     summary: '유저 정보 복구',
@@ -68,6 +77,9 @@ export class UsersController {
   async restore(@Param() params: QueryParameterDTO) {
     return this.userService.restore(+params.id);
   }
+
+  @UseGuards(LocalAuthGuard)
+  @ApiBearerAuth('Authorization')
   @Delete(':id')
   @ApiOperation({
     summary: '유저 정보 삭제 (회원 탈퇴)',
@@ -78,6 +90,8 @@ export class UsersController {
     return this.userService.remove(+params.id);
   }
 
+  @UseGuards(LocalAuthGuard)
+  @ApiBearerAuth('Authorization')
   @Patch(':id')
   @ApiOperation({
     summary: '유저 정보 수정',

@@ -1,19 +1,24 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { LikesService } from './likes.service';
 import { CreateLikeDTO } from './dto/create-like.dto';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { ErrorMessage } from '../../common/enum/errormessage.enum';
 import { SuccessMessage } from '../../common/enum/successmessage.enum';
+import { LocalAuthGuard } from '../auth/guard/local.auth.guard';
 
 @ApiTags('likes')
 @Controller('likes')
 export class LikesController {
   constructor(private readonly likesService: LikesService) {}
+
+  @UseGuards(LocalAuthGuard)
+  @ApiBearerAuth('Authorization')
   @Post()
   @ApiOperation({
     summary: '좋아요 생성',

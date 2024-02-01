@@ -19,4 +19,6 @@ export enum ErrorMessage {
   UNAUTHORIZED = `${CommonErrorMessage.UNAUTHORIZED}`,
   BAD_TOKEN = `${CommonErrorMessage.BAD_TOKEN}`,
   TOKEN_EXPIRED = `${CommonErrorMessage.TOKEN_EXPIRED}`,
+  FILE_TO_LARGE = `File ${CommonErrorMessage.TO_LARGE}`,
+  INVALID_FILE_TYPE = `File ${CommonErrorMessage.INVALID_FILE_TYPE}`,
 }

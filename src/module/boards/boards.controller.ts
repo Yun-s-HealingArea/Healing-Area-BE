@@ -35,6 +35,7 @@ import { Boards } from './entities/boards.entity';
 import { SuccessMessage } from '../../common/enum/successmessage.enum';
 import { ErrorMessage } from '../../common/enum/errormessage.enum';
 import { ConfigService } from '@nestjs/config';
+import { generateFilePipeBuilder } from '../../common/function/generate.file.pipe.builder';
 
 @ApiTags('boards')
 @Controller('boards')
@@ -160,7 +161,9 @@ export class BoardsController {
   @ApiBearerAuth('Authorization')
   @Post(':id/image')
   async saveImage(
-    @UploadedFile() file: Express.Multer.File,
+    //TODO: 추후 Guard로 파일 사이즈 쳐내야 함. Guard는 리퀘스트 가장 첫 번째 단계에서 실행되기 때문.
+    @UploadedFile(generateFilePipeBuilder())
+    file: Express.Multer.File,
     @Param() params: QueryParameterDTO,
   ) {
     const imageFileName = await this.boardsService.imageUpload(file);

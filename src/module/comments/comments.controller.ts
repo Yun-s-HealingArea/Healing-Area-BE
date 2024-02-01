@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CreateCommentDTO } from './dto/create-comment.dto';
@@ -14,6 +15,7 @@ import { UpdateCommentDTO } from './dto/update-comment.dto';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { QueryParameterDTO } from '../../common/dto/query.parameter.dto';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiOkResponse,
@@ -24,6 +26,7 @@ import {
 import { ErrorMessage } from '../../common/enum/errormessage.enum';
 import { SuccessMessage } from '../../common/enum/successmessage.enum';
 import { ConfigService } from '@nestjs/config';
+import { LocalAuthGuard } from '../auth/guard/local.auth.guard';
 
 @ApiTags('comments')
 @Controller('comments')
@@ -33,6 +36,8 @@ export class CommentsController {
     private readonly configService: ConfigService,
   ) {}
 
+  @UseGuards(LocalAuthGuard)
+  @ApiBearerAuth('Authorization')
   @Post()
   @ApiOperation({
     summary: '댓글 작성',
@@ -46,6 +51,9 @@ export class CommentsController {
   async create(@Body() createCommentDto: CreateCommentDTO) {
     return this.commentsService.create(createCommentDto);
   }
+
+  @UseGuards(LocalAuthGuard)
+  @ApiBearerAuth('Authorization')
   @Patch(':id')
   @ApiOperation({
     summary: '댓글 수정',
@@ -86,6 +94,8 @@ export class CommentsController {
     return this.commentsService.findOne(+params.id);
   }
 
+  @UseGuards(LocalAuthGuard)
+  @ApiBearerAuth('Authorization')
   @Delete(':id')
   @ApiOperation({
     summary: '댓글 삭제',
@@ -98,6 +108,8 @@ export class CommentsController {
     return this.commentsService.remove(+params.id);
   }
 
+  @UseGuards(LocalAuthGuard)
+  @ApiBearerAuth('Authorization')
   @Post(':id/restore')
   @ApiOperation({
     summary: '댓글 복구',

@@ -12,4 +12,6 @@ export enum CommonErrorMessage {
   UNAUTHORIZED = 'Unauthorized',
   BAD_TOKEN = 'Bad token',
   TOKEN_EXPIRED = 'Token expired',
+  TO_LARGE = 'To large',
+  INVALID_FILE_TYPE = 'Invalid file type',
 }
