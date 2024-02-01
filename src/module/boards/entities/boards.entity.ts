@@ -20,8 +20,8 @@ export class Boards extends AbstractEntity {
   @Column({ type: 'varchar', length: 2000 })
   description: string;
 
-  @Column({ name: 'image_file_name', type: 'varchar', nullable: true })
-  imageFileName: string;
+  @Column({ name: 'image_file_url', type: 'varchar', nullable: true })
+  imageFileURL: string;
 
   @Column({ name: 'is_private', type: 'boolean', default: false })
   isPrivate: boolean;

@@ -23,10 +23,33 @@ import { ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
 import { ImageUploadDTO } from '../upload/dto/image-upload.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { QueryParameterDTO } from '../../common/dto/query.parameter.dto';
+import { generateItemsObject } from '../../common/function/generate.items.object';
+import { Boards } from './entities/boards.entity';
 
 @Controller('boards')
 export class BoardsController {
   constructor(private readonly boardsService: BoardsService) {}
+
+  @Get('comments')
+  async allBoardsGetComments(@Query() paginateDTO: PaginateDTO) {
+    paginateDTO.limit = paginateDTO.limit > 100 ? 100 : paginateDTO.limit;
+    return this.boardsService.allBoardsGetComments({
+      page: paginateDTO.page,
+      limit: paginateDTO.limit,
+    });
+  }
+
+  @Get(':id')
+  async findOne(
+    @Param() params: QueryParameterDTO,
+  ): Promise<{ items: Boards }> {
+    console.log(typeof params.id);
+    console.log(params);
+    return generateItemsObject(
+      await this.boardsService.findOneWithFileURL(+params.id),
+    );
+  }
+
   @UseGuards(LocalAuthGuard)
   @Post()
   async create(
@@ -45,41 +68,27 @@ export class BoardsController {
     });
   }
 
-  @Get('/comments')
-  async allBoardsGetComments(@Query() paginateDTO: PaginateDTO) {
-    paginateDTO.limit = paginateDTO.limit > 100 ? 100 : paginateDTO.limit;
-    return this.boardsService.allBoardsGetComments({
-      page: paginateDTO.page,
-      limit: paginateDTO.limit,
-    });
+  @Get(':id/comments')
+  async getOneBoardsComments(@Param() params: QueryParameterDTO) {
+    return this.boardsService.oneBoardsGetComments(+params.id);
   }
 
-  @Get(':boardsId/comments')
-  async getOneBoardsComments(@Param('boardsId') id: QueryParameterDTO) {
-    return this.boardsService.oneBoardsGetComments(+id);
-  }
-
-  @Get(':boardsId')
-  async findOne(@Param('boardsId') id: QueryParameterDTO) {
-    return this.boardsService.findOne(+id);
-  }
-
-  @Patch(':boardsId')
+  @Patch(':id')
   async update(
-    @Param('boardsId') id: QueryParameterDTO,
+    @Param() params: QueryParameterDTO,
     @Body() updateBoardDto: UpdateBoardDTO,
   ) {
-    return this.boardsService.update(+id, updateBoardDto);
+    return this.boardsService.update(+params.id, updateBoardDto);
   }
 
-  @Delete(':boardsId')
-  async remove(@Param('boardsId') id: QueryParameterDTO) {
-    return this.boardsService.remove(+id);
+  @Delete(':id')
+  async remove(@Param() params: QueryParameterDTO) {
+    return this.boardsService.remove(+params.id);
   }
 
-  @Post(':boardsId/restore')
-  async restore(@Param('boardsId') id: QueryParameterDTO) {
-    return this.boardsService.restore(+id);
+  @Post(':id/restore')
+  async restore(@Param() params: QueryParameterDTO) {
+    return this.boardsService.restore(+params.id);
   }
 
   @ApiOperation({ summary: '그림 완성시 그림 업로드' })
@@ -90,14 +99,15 @@ export class BoardsController {
   })
   @UseInterceptors(FileInterceptor('file'))
   @HttpCode(200)
-  @Post(':boardsId/image')
+  @Post(':id/image')
   async saveImage(
     @UploadedFile() file: Express.Multer.File,
-    @Param('boardsId') id: QueryParameterDTO,
+    @Param() params: QueryParameterDTO,
   ) {
     const imageFileName = await this.boardsService.imageUpload(file);
-    return this.boardsService.imageURLToDB(+id, imageFileName);
+    return this.boardsService.imageURLToDB(+params.id, imageFileName);
   }
+
   //
   // @Get(':boardsId/image/presigned_url'))
   // async getPresignedURL(@Param('boardsId') id: string) {

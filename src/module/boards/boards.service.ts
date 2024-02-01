@@ -47,29 +47,35 @@ export class BoardsService {
     // console.log(queryBuilder.then((res) => console.log(res)));
     const boards = await paginate(this.boardsRepository, options, {
       order: { createdAt: 'ASC' },
+      where: { boardStatus: BoardsStatus.DONE, deletedAt: null },
     });
+    //TODO: presingedURL을 10번 반복하지 않고 1번에 처리할 수 있는 방법 구상
+    // 오버로딩?
     for (const board of boards.items) {
-      board.imageFileName = await this.uploadService.getPresignedURL(
+      board.imageFileURL = await this.uploadService.getPresignedURL(
         this.configService.get('AWS_S3_BUCKET_BOARDS_RESOURCE_FOLDER_NAME'),
-        board.imageFileName,
+        board.imageFileURL,
       );
     }
     //이미지 업로드가 null이면 패스, 아니면 peekImageURL을 통해 이미지 URL을 가져온다.
     return boards;
   }
 
-  async findOne(id: number) {
+  async findOneWithFileURL(id: number) {
     // NotFoundException
     const board = await this.boardsRepository.findOne({ where: { id } });
     // console.log(board.imageFileName);
     board &&
-      (board.imageFileName = await this.uploadService.getPresignedURL(
+      (board.imageFileURL = await this.uploadService.getPresignedURL(
         this.configService.get('AWS_S3_BUCKET_BOARDS_RESOURCE_FOLDER_NAME'),
-        board.imageFileName,
+        board.imageFileURL,
       ));
     return board;
   }
 
+  async findOne(id: number) {
+    return this.boardsRepository.findOne({ where: { id } });
+  }
   async update(id: number, updateBoardDto: UpdateBoardDTO) {
     await this.boardsRepository.update(id, updateBoardDto);
     return generateMessageObject(SuccessMessage.BOARD_UPDATED);
@@ -86,15 +92,22 @@ export class BoardsService {
   }
 
   async oneBoardsGetComments(id: number) {
-    return this.boardsRepository.findOne({
+    const board = await this.boardsRepository.findOne({
       where: { id },
       relations: ['comments'],
     });
+    board &&
+      (board.imageFileURL = await this.uploadService.getPresignedURL(
+        this.configService.get('AWS_S3_BUCKET_BOARDS_RESOURCE_FOLDER_NAME'),
+        board.imageFileURL,
+      ));
+    return board;
   }
 
   async allBoardsGetComments(options: IPaginationOptions) {
     return paginate(this.boardsRepository, options, {
       relations: ['comments'],
+      order: { createdAt: 'ASC' },
     });
   }
 
@@ -116,11 +129,15 @@ export class BoardsService {
     return imageUrl.split('/').pop();
   }
 
-  async imageURLToDB(id: number, imageFileName: string) {
+  async imageURLToDB(id: number, imageFileURL: string) {
     await this.boardsRepository.update(id, {
-      imageFileName,
+      imageFileURL,
       boardStatus: BoardsStatus.DONE,
     });
     return generateMessageObject(SuccessMessage.BOARD_UPDATED);
+  }
+
+  async isBoardsExist(id: number) {
+    return await this.boardsRepository.exist({ where: { id } });
   }
 }
