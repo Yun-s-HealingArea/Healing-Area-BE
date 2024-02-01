@@ -47,6 +47,13 @@ export class UsersService {
     return this.userRepository.findOne({ where: { email } });
   }
 
+  async findOneAndReturnRefreshToken(email: string) {
+    return this.userRepository.findOne({
+      where: { email },
+      select: ['refreshToken'],
+    });
+  }
+
   async update(userId: number, updateUserDTO: UpdateUserDTO) {
     return this.userRepository.update(userId, updateUserDTO);
   }

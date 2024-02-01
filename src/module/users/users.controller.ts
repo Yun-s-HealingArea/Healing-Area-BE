@@ -13,6 +13,8 @@ import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
+import { QueryParameterDTO } from '../../common/dto/query.parameter.dto';
+import { generateItemsObject } from '../../common/function/generate.items.object';
 
 @ApiTags('users')
 @Controller('users')
@@ -32,36 +34,36 @@ export class UsersController {
     });
   }
 
-  @Get(':userId')
+  @Get(':id')
   @ApiOperation({
     summary: '단일 유저 조회',
     description: 'param으로 들어온 userId에 해당하는 유저를 조회한다.',
   })
-  async findOne(@Param('userId') userId: string) {
-    return this.userService.findOne(+userId);
+  async findOne(@Param() params: QueryParameterDTO) {
+    return generateItemsObject(await this.userService.findOne(+params.id));
   }
 
-  @Patch(':userId')
+  @Patch(':id')
   @ApiOperation({
     summary: '유저 정보 수정',
     description: 'param으로 들어온 userId에 해당하는 유저의 정보를 수정한다.',
   })
   async update(
-    @Param('userId') userId: string,
+    @Param() params: QueryParameterDTO,
     @Body() updateUserDto: UpdateUserDTO,
   ) {
     console.log(updateUserDto);
-    return this.userService.update(+userId, updateUserDto);
+    return this.userService.update(+params.id, updateUserDto);
   }
 
-  @Delete(':userId')
+  @Delete(':id')
   @ApiOperation({
     summary: '유저 정보 삭제 (회원 탈퇴)',
     description:
       'param으로 들어온 userId에 해당하는 유저의 정보를 논리 삭제(soft delete) 한다. (미구현)',
   })
-  async remove(@Param('userId') userId: string) {
-    return this.userService.remove(+userId);
+  async remove(@Param() params: QueryParameterDTO) {
+    return this.userService.remove(+params.id);
   }
 
   @Post('register')
@@ -74,12 +76,12 @@ export class UsersController {
     return this.userService.create(createUserDto);
   }
 
-  @Post('restore/:userId')
+  @Post('restore/:id')
   @ApiOperation({
     summary: '유저 정보 복구',
     description: 'param으로 들어온 userId에 해당하는 유저의 정보를 복구한다',
   })
-  async restore(@Param('userId') userId: string) {
-    return this.userService.restore(+userId);
+  async restore(@Param('userId') params: QueryParameterDTO) {
+    return this.userService.restore(+params.id);
   }
 }
