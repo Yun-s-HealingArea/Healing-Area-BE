@@ -17,11 +17,11 @@ import { LikesModule } from './module/likes/likes.module';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync(typeormConfig),
     AuthModule,
-    UsersModule,
-    TokenModule,
     BoardsModule,
     CommentsModule,
     LikesModule,
+    UsersModule,
+    TokenModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
