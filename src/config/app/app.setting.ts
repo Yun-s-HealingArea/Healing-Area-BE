@@ -41,7 +41,11 @@ export function appSetting<T extends INestApplication>(app: T): void {
   app CORS
    */
   app.enableCors({
-    origin: ['http://localhost:3000', configService.get('HEALING_AREA_URL')],
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:8000',
+      configService.get('HEALING_AREA_URL'),
+    ],
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
     credentials: true,
     allowedHeaders: [

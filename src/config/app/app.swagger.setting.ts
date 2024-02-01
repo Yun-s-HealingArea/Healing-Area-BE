@@ -24,6 +24,8 @@ export function appSwaggerSetting<T extends INestApplication>(app: T): void {
       },
       'Authorization',
     )
+    .addServer('http://localhost:8000')
+    .addServer('https://www.yun-healing-area.store')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(
