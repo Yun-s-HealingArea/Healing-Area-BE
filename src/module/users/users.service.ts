@@ -54,16 +54,20 @@ export class UsersService {
     });
   }
 
+  //TODO: 암호 업데이트시 암호화후 다시 DB에 저장하기
   async update(userId: number, updateUserDTO: UpdateUserDTO) {
-    return this.userRepository.update(userId, updateUserDTO);
+    await this.userRepository.update(userId, updateUserDTO);
+    return generateMessageObject(SuccessMessage.USER_UPDATED);
   }
   //TODO: 회원 탈퇴
   async remove(userId: number) {
-    return this.userRepository.softDelete(userId);
+    await this.userRepository.softDelete(userId);
+    return generateMessageObject(SuccessMessage.USER_DELETED);
   }
 
   async restore(userId: number) {
-    return this.userRepository.restore(userId);
+    await this.userRepository.restore(userId);
+    return generateMessageObject(SuccessMessage.USER_RESTORED);
   }
 
   async isUserExist(email: string) {

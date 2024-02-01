@@ -12,7 +12,7 @@ import { PASSWORD_REGEX } from '../../../common/constants/regex/password.regex';
 export class CreateUserDTO {
   @IsEmail()
   @IsNotEmpty()
-  @ApiProperty({ example: 'example@example.com', description: '이메일' })
+  @ApiProperty({ example: 'example@email.com', description: '이메일' })
   readonly email: string;
 
   @IsString()
@@ -33,6 +33,6 @@ export class CreateUserDTO {
 
   @IsPhoneNumber('KR')
   @IsNotEmpty()
-  @ApiProperty({ example: '010-1234-1234', description: '휴대폰번호' })
+  @ApiProperty({ example: '010-1234-1234', description: '(한국)휴대폰번호' })
   readonly phoneNumber: string;
 }

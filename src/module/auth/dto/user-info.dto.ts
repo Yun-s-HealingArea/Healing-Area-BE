@@ -19,16 +19,19 @@ export class UserInfoDTO {
   readonly userEmail: string;
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ example: '' })
+  @ApiProperty({ example: 'https://www.yun-healing-area.store' })
   readonly iss: string;
   @IsString()
   @Matches(TokenType.ACCESS_TOKEN)
   @IsNotEmpty()
+  @ApiProperty({ example: 'accessToken', description: '토큰 타입' })
   readonly sub: string;
   @IsInt()
   @IsPositive()
+  @ApiProperty({ example: 1620000000, description: '토큰 발급 시간' })
   readonly iat: number;
   @IsInt()
   @IsPositive()
+  @ApiProperty({ example: 1620000001, description: '토큰 만료 시간' })
   readonly exp: number;
 }

@@ -15,11 +15,16 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { QueryParameterDTO } from '../../common/dto/query.parameter.dto';
 import { generateItemsObject } from '../../common/function/generate.items.object';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly userService: UsersService) {}
+  constructor(
+    private readonly userService: UsersService,
+    private readonly configService: ConfigService,
+  ) {}
+
   //TODO: nestjs-typeorm-paginate 적용
   @Get()
   @ApiOperation({
@@ -31,39 +36,19 @@ export class UsersController {
     return this.userService.findAll({
       page: paginateDTO.page,
       limit: paginateDTO.limit,
+      route:
+        this.configService.get('HEALING_AREA_URL') +
+        this.configService.get('AWS_S3_BUCKET_USERS_RESOURCE_FOLDER_NAME'),
     });
   }
 
   @Get(':id')
   @ApiOperation({
-    summary: '단일 유저 조회',
+    summary: '유저 단일 조회',
     description: 'param으로 들어온 userId에 해당하는 유저를 조회한다.',
   })
   async findOne(@Param() params: QueryParameterDTO) {
     return generateItemsObject(await this.userService.findOne(+params.id));
-  }
-
-  @Patch(':id')
-  @ApiOperation({
-    summary: '유저 정보 수정',
-    description: 'param으로 들어온 userId에 해당하는 유저의 정보를 수정한다.',
-  })
-  async update(
-    @Param() params: QueryParameterDTO,
-    @Body() updateUserDto: UpdateUserDTO,
-  ) {
-    console.log(updateUserDto);
-    return this.userService.update(+params.id, updateUserDto);
-  }
-
-  @Delete(':id')
-  @ApiOperation({
-    summary: '유저 정보 삭제 (회원 탈퇴)',
-    description:
-      'param으로 들어온 userId에 해당하는 유저의 정보를 논리 삭제(soft delete) 한다. (미구현)',
-  })
-  async remove(@Param() params: QueryParameterDTO) {
-    return this.userService.remove(+params.id);
   }
 
   @Post('register')
@@ -75,13 +60,33 @@ export class UsersController {
   async register(@Body() createUserDto: CreateUserDTO) {
     return this.userService.create(createUserDto);
   }
-
-  @Post('restore/:id')
+  @Post(':id/restore')
   @ApiOperation({
     summary: '유저 정보 복구',
     description: 'param으로 들어온 userId에 해당하는 유저의 정보를 복구한다',
   })
-  async restore(@Param('userId') params: QueryParameterDTO) {
+  async restore(@Param() params: QueryParameterDTO) {
     return this.userService.restore(+params.id);
+  }
+  @Delete(':id')
+  @ApiOperation({
+    summary: '유저 정보 삭제 (회원 탈퇴)',
+    description:
+      'param으로 들어온 userId에 해당하는 유저의 정보를 논리 삭제(soft delete) 한다. (미구현)',
+  })
+  async remove(@Param() params: QueryParameterDTO) {
+    return this.userService.remove(+params.id);
+  }
+
+  @Patch(':id')
+  @ApiOperation({
+    summary: '유저 정보 수정',
+    description: 'param으로 들어온 userId에 해당하는 유저의 정보를 수정한다.',
+  })
+  async update(
+    @Param() params: QueryParameterDTO,
+    @Body() updateUserDto: UpdateUserDTO,
+  ) {
+    return this.userService.update(+params.id, updateUserDto);
   }
 }

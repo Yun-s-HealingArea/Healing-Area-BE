@@ -42,6 +42,7 @@ export class AuthService {
     }
   }
   async logOut(user: UserInfoDTO) {
+    console.log(user);
     if (!user) throw new UnauthorizedException([ErrorMessage.UNAUTHORIZED]);
     const userData = await this.usersService.findOneByEmail(user.userEmail);
     await this.usersService.updateRefreshToken(userData.id, null);
