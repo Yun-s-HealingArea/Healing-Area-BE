@@ -4,8 +4,10 @@ import {
   IsNotEmpty,
   IsPhoneNumber,
   IsString,
+  Matches,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { PASSWORD_REGEX } from '../../../common/constants/regex/password.regex';
 
 export class CreateUserDTO {
   @IsEmail()
@@ -16,6 +18,7 @@ export class CreateUserDTO {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: 'exampleuser1234!', description: '비밀번호' })
+  @Matches(PASSWORD_REGEX)
   readonly password: string;
 
   @IsString()
