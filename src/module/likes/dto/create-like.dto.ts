@@ -1,9 +1,9 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateLikeDTO {
-  @IsNumber()
+  @IsEmail()
   @IsNotEmpty()
-  usersId: number;
+  usersEmail: string;
 
   @IsNumber()
   @IsNotEmpty()
