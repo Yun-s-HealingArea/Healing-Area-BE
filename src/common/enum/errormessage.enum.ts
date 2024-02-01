@@ -15,6 +15,7 @@ export enum ErrorMessage {
   BOARD_ALREADY_EXIST = `Board ${CommonErrorMessage.ALREADY_EXIST}`,
   COMMENT_NOT_FOUND = `Comment ${CommonErrorMessage.NOT_FOUND}`,
   COMMENT_ALREADY_EXIST = `Comment ${CommonErrorMessage.ALREADY_EXIST}`,
+  LIKE_ALREADY_EXIST = `Like ${CommonErrorMessage.ALREADY_EXIST}`,
   UNAUTHORIZED = `${CommonErrorMessage.UNAUTHORIZED}`,
   BAD_TOKEN = `${CommonErrorMessage.BAD_TOKEN}`,
   TOKEN_EXPIRED = `${CommonErrorMessage.TOKEN_EXPIRED}`,
