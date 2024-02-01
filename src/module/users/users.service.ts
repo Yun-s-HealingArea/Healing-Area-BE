@@ -54,9 +54,19 @@ export class UsersService {
     });
   }
 
-  //TODO: 암호 업데이트시 암호화후 다시 DB에 저장하기
   async update(userId: number, updateUserDTO: UpdateUserDTO) {
-    await this.userRepository.update(userId, updateUserDTO);
+    const hashedPassword = await bcrypt.hash(updateUserDTO.password, 10);
+    const { email, name, birthday, phoneNumber } = updateUserDTO;
+
+    const updatedUser = this.userRepository.create({
+      email,
+      password: hashedPassword,
+      name,
+      birthday,
+      phoneNumber,
+    });
+
+    await this.userRepository.update(userId, updatedUser);
     return generateMessageObject(SuccessMessage.USER_UPDATED);
   }
   //TODO: 회원 탈퇴
