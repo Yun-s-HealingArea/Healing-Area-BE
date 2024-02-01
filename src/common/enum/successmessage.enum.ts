@@ -14,4 +14,7 @@ export enum SuccessMessage {
   COMMENT_UPDATED = `Comment ${CommonSuccessMessage.UPDATED}`,
   COMMENT_DELETED = `Comment ${CommonSuccessMessage.DELETED}`,
   COMMENT_RESTORED = `Comment ${CommonSuccessMessage.RESTORED}`,
+  LIKE_CREATED = `Like ${CommonSuccessMessage.CREATED}`,
+  LIKE_DELETED = `Like ${CommonSuccessMessage.DELETED}`,
+  LIKE_RESTORED = `Like ${CommonSuccessMessage.RESTORED}`,
 }
