@@ -12,6 +12,7 @@ import { CommentsService } from './comments.service';
 import { CreateCommentDTO } from './dto/create-comment.dto';
 import { UpdateCommentDTO } from './dto/update-comment.dto';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
+import { QueryParameterDTO } from '../../common/dto/query.parameter.dto';
 
 @Controller('comments')
 export class CommentsController {
@@ -30,26 +31,26 @@ export class CommentsController {
     });
   }
 
-  @Get(':commentsId')
-  async findOne(@Param('commentsId') id: string) {
-    return this.commentsService.findOne(+id);
+  @Get(':id')
+  async findOne(@Param() params: QueryParameterDTO) {
+    return this.commentsService.findOne(+params.id);
   }
 
-  @Patch(':commentsId')
+  @Patch(':id')
   async update(
-    @Param('commentsId') id: string,
+    @Param() params: QueryParameterDTO,
     @Body() updateCommentDTO: UpdateCommentDTO,
   ) {
-    return this.commentsService.update(+id, updateCommentDTO);
+    return this.commentsService.update(+params.id, updateCommentDTO);
   }
 
-  @Delete(':commentsId')
-  async remove(@Param('commentsId') id: string) {
-    return this.commentsService.remove(+id);
+  @Delete(':id')
+  async remove(@Param() params: QueryParameterDTO) {
+    return this.commentsService.remove(+params.id);
   }
 
-  @Post(':commentsId/restore')
-  async restore(@Param('commentsId') id: string) {
-    return this.commentsService.restore(+id);
+  @Post(':id/restore')
+  async restore(@Param() params: QueryParameterDTO) {
+    return this.commentsService.restore(+params.id);
   }
 }
