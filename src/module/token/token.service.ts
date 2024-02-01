@@ -42,8 +42,17 @@ export class TokenService {
     const payload = await this.jwtService.verifyAsync(
       createRefreshTokenDTO.refreshToken,
     );
+
     const { userEmail, iat, exp, ...userInfos } = payload;
-    const user = await this.usersService.findOneByEmail(userEmail);
+    const user =
+      await this.usersService.findOneAndReturnRefreshToken(userEmail);
+
+    const isRefreshTokenExist =
+      user.refreshToken === createRefreshTokenDTO.refreshToken;
+
+    //TODO: IF문 최적화
+    if (!isRefreshTokenExist)
+      throw new BadRequestException([ErrorMessage.BAD_TOKEN]);
     if (!user) throw new BadRequestException([ErrorMessage.USER_NOT_FOUND]);
     const accessToken = this.generateAccessToken(userEmail);
     return { accessToken };
