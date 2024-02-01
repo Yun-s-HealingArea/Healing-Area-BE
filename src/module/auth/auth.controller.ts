@@ -42,12 +42,27 @@ export class AuthController {
   @ApiBody({ type: LoginDTO })
   async logIn(@Body() loginDTO: LoginDTO, @Res() res: Response) {
     const token = await this.authService.logIn(loginDTO);
-    //TODO: 삭제
-    res.setHeader('accessToken', `${token.accessToken}`);
-    res.setHeader('refreshToken', `${token.refreshToken}`);
+    //RefreshToken은 HttpOnly, SameSite=None, Secure를 담은 채 Header로 전송
+    //AccessToken은 Response Body로 전송
+    res.setHeader(
+      'Set-Cookie',
+      `refreshToken=${
+        token.refreshToken
+      }; HttpOnly; Path=/; Max-Age=${this.configService.get(
+        'HEALING_AREA_REFRESH_EXPIRATION_TIME',
+      )} SameSite=None; Secure;`,
+    );
+    // res.setHeader(
+    //   'Set-Cookie',
+    //   `accessToken=${
+    //     token.accessToken
+    //   }; Path=/; Max-Age=${this.configService.get(
+    //     'HEALING_AREA_ACCESS_EXPIRATION_TIME',
+    //   )} SameSite=None; Secure;`,
+    // );
     res.json({
       statusCode: res.statusCode,
-      data: token,
+      data: { accessToken: token.accessToken },
       timeStamp: format(
         new Date(),
         DateFormat.YEAR_MONTH_DAY_HOUR_MINUTE_SECOND_FORMAT,
@@ -61,7 +76,6 @@ export class AuthController {
   @Post('logout')
   @ApiOperation({ summary: '로그아웃' })
   async logOut(@Res() res: Response, @UserDataFromJWT() user: UserInfoDTO) {
-    res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
     res.json({
       statusCode: res.statusCode,
