@@ -105,12 +105,19 @@ export class BoardsService {
   }
 
   async allBoardsGetComments(options: IPaginationOptions) {
-    return paginate(this.boardsRepository, options, {
-      relations: ['comments'],
+    const boards = await paginate(this.boardsRepository, options, {
       order: { createdAt: 'ASC' },
+      where: { boardStatus: BoardsStatus.DONE, deletedAt: null },
+      relations: ['comments'],
     });
+    for (const board of boards.items) {
+      board.imageFileURL = await this.uploadService.getPresignedURL(
+        this.configService.get('AWS_S3_BUCKET_BOARDS_RESOURCE_FOLDER_NAME'),
+        board.imageFileURL,
+      );
+    }
+    return boards;
   }
-
   async imageUpload(file: Express.Multer.File) {
     const imageName = uuid();
     const ext = file.originalname.split('.').pop();
