@@ -20,7 +20,8 @@ export function appSetting<T extends INestApplication>(app: T): void {
        **/
       whitelist: true,
       forbidNonWhitelisted: true,
-      transform: false,
+      // transform: true,
+      // transformOptions: { enableImplicitConversion: true },
       disableErrorMessages: false,
     }),
   );
