@@ -49,13 +49,36 @@ export class UploadService {
     )}/${fileName}`;
   }
 
-  async getPresignedURL(folderName: string, fileName: string): Promise<string> {
+  async getPresignedURL(
+    folderName: string,
+    imageFileURL: string[],
+  ): Promise<string[]>;
+  async getPresignedURL(
+    folderName: string,
+    imageFileURL: string,
+  ): Promise<string>;
+  async getPresignedURL(
+    folderName: string,
+    imageFileURL: string | string[],
+  ): Promise<string | string[]> {
+    // if (Array.isArray(fileName)) {
+    // } else {
     const command = new GetObjectCommand({
       Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
-      Key: folderName + fileName,
+      Key: folderName + imageFileURL,
     });
     return await getSignedUrl(this.s3Client, command, {
       expiresIn: this.configService.get('AWS_S3_PRESIGNED_URL_EXPIRES_IN'),
     });
+    // }
+    //   // async getPresignedURL(folderName: string, fileName: string): Promise<string> {
+    //   const command = new GetObjectCommand({
+    //     Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
+    //     Key: folderName + fileName,
+    //   });
+    //   return await getSignedUrl(this.s3Client, command, {
+    //     expiresIn: this.configService.get('AWS_S3_PRESIGNED_URL_EXPIRES_IN'),
+    //   });
+    // }
   }
 }
