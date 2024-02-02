@@ -54,7 +54,7 @@ export class BoardsController {
     return this.boardsService.allBoardsGetComments({
       page: paginateDTO.page,
       limit: paginateDTO.limit,
-      route: this.configService.get('HEALING_AREA_URL') + '/boards/comments',
+      route: this.configService.get('HEALING_AREA_URL') + 'boards/comments',
     });
   }
 

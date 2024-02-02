@@ -122,7 +122,7 @@ export class BoardsService {
     const imageName = uuid();
     const ext = file.originalname.split('.').pop();
     const imageUrl = await this.uploadService.imageUploadToS3(
-      'boards/',
+      this.configService.get('AWS_S3_BUCKET_BOARDS_RESOURCE_FOLDER_NAME'),
       `${imageName}.${ext}`,
       file,
       ext,
