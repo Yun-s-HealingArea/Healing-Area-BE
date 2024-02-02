@@ -54,10 +54,7 @@ export class BoardsController {
     return this.boardsService.allBoardsGetComments({
       page: paginateDTO.page,
       limit: paginateDTO.limit,
-      route:
-        this.configService.get('HEALING_AREA_URL') +
-        this.configService.get('AWS_S3_BUCKET_BOARDS_RESOURCE_FOLDER_NAME') +
-        this.configService.get('AWS_S3_BUCKET_COMMENTS_RESOURCE_FOLDER_NAME'),
+      route: this.configService.get('HEALING_AREA_URL') + '/boards/comments',
     });
   }
 
