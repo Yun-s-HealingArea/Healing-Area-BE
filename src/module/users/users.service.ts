@@ -39,8 +39,15 @@ export class UsersService {
     return paginate(this.userRepository, options);
   }
 
-  async findOne(userId: number) {
-    return this.userRepository.findOne({ where: { id: userId } });
+  async findOne(userId: number): Promise<Users | null>;
+  async findOne(userId: string): Promise<Users | null>;
+  async findOne(userId: number | string): Promise<Users | null> {
+    if (typeof userId === 'number') {
+      return this.userRepository.findOne({ where: { id: userId } });
+    } else if (typeof userId === 'string') {
+      return this.userRepository.findOne({ where: { email: userId } });
+    }
+    return null;
   }
 
   async findOneByEmail(email: string) {
