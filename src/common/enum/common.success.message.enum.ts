@@ -6,4 +6,5 @@ export enum CommonSuccessMessage {
   LOGIN = 'Login successfully',
   LOGOUT = 'Logout successfully',
   GENERATED = 'Generated successfully',
+  SUCCESS = 'Successfully',
 }

@@ -14,4 +14,6 @@ export enum CommonErrorMessage {
   TOKEN_EXPIRED = 'Token expired',
   TO_LARGE = 'To large',
   INVALID_FILE_TYPE = 'Invalid file type',
+  TIMEOUT = 'Timeout',
+  INTERNAL_SERVER_ERROR = 'Internal server error',
 }

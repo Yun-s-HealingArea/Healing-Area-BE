@@ -21,4 +21,6 @@ export enum ErrorMessage {
   TOKEN_EXPIRED = `${CommonErrorMessage.TOKEN_EXPIRED}`,
   FILE_TO_LARGE = `File ${CommonErrorMessage.TO_LARGE}`,
   INVALID_FILE_TYPE = `File ${CommonErrorMessage.INVALID_FILE_TYPE}`,
+  REQUEST_TIMEOUT = `Request ${CommonErrorMessage.TIMEOUT}`,
+  REQUEST_INTERNAL_SERVER_ERROR = `Request ${CommonErrorMessage.INTERNAL_SERVER_ERROR}`,
 }

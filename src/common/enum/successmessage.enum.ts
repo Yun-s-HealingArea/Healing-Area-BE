@@ -13,6 +13,7 @@ export enum SuccessMessage {
   BOARD_UPDATED = `Board ${CommonSuccessMessage.UPDATED}`,
   BOARD_DELETED = `Board ${CommonSuccessMessage.DELETED}`,
   BOARD_RESTORED = `Board ${CommonSuccessMessage.RESTORED}`,
+  BOARD_VIEWS_UPDATED = `Board Views ${CommonSuccessMessage.UPDATED}`,
   COMMENT_CREATED = `Comment ${CommonSuccessMessage.CREATED}`,
   COMMENT_UPDATED = `Comment ${CommonSuccessMessage.UPDATED}`,
   COMMENT_DELETED = `Comment ${CommonSuccessMessage.DELETED}`,
