@@ -11,10 +11,20 @@ import { BoardsModule } from './module/boards/boards.module';
 import { CommentsModule } from './module/comments/comments.module';
 import { JwtModule } from '@nestjs/jwt';
 import { LikesModule } from './module/likes/likes.module';
+import { BullModule } from '@nestjs/bull';
+import { bullQueueConfig } from './config/bull/factory/bullqueue.config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    //TODO:수정 요망
+
+    BullModule.forRootAsync(bullQueueConfig),
+    EventEmitterModule.forRoot({
+      global: true,
+      maxListeners: 10,
+    }),
     TypeOrmModule.forRootAsync(typeormConfig),
     AuthModule,
     BoardsModule,

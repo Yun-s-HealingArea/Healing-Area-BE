@@ -91,6 +91,17 @@ export class BoardsController {
     return this.boardsService.create(createBoardDto, users);
   }
 
+  @Post(':id/views')
+  @ApiOperation({
+    summary: '게시글 조회수 증가',
+    description:
+      'param으로 들어온 id에 해당하는 게시글의 조회수를 증가시킨다. ',
+  })
+  // @UseInterceptors(TransactionInterceptor)
+  async views(@Param() params: QueryParameterDTO) {
+    return this.boardsService.increaseViewsAddQueue(+params.id);
+  }
+
   @Get()
   @ApiOperation({
     summary: '게시글 전체 조회',

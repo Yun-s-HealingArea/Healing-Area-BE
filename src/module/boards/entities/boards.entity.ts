@@ -29,6 +29,9 @@ export class Boards extends AbstractEntity {
   @Column({ name: 'board_status', type: 'varchar', default: 0 })
   boardStatus: number;
 
+  @Column({ name: 'views', type: 'int', default: 0 })
+  views: number;
+
   @OneToMany(() => Comments, (comments) => comments.boards)
   comments: Comments[];
 

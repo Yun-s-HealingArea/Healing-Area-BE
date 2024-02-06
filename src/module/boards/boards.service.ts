@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateBoardDTO } from './dto/create-board.dto';
 import { UpdateBoardDTO } from './dto/update-board.dto';
 import { BoardsRepository } from './boards.repository';
@@ -16,6 +20,11 @@ import { UsersInfoDTO } from '../users/dto/users-info.dto';
 import { UploadService } from '../upload/upload.service';
 import { BoardsStatus } from './enum/status.enum';
 import { ConfigService } from '@nestjs/config';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ErrorMessage } from '../../common/enum/errormessage.enum';
+import { CommonSuccessMessage } from '../../common/enum/common.success.message.enum';
 
 @Injectable()
 export class BoardsService {
@@ -24,6 +33,8 @@ export class BoardsService {
     private readonly usersService: UsersService,
     private readonly uploadService: UploadService,
     private readonly configService: ConfigService,
+    @InjectQueue('boards-queue') private readonly boardsQueue: Queue,
+    private eventEmitter: EventEmitter2,
   ) {}
   async create(createBoardDTO: CreateBoardDTO, token: UsersInfoDTO) {
     const users = await this.usersService.findOneByEmail(token.userEmail);
@@ -146,5 +157,76 @@ export class BoardsService {
 
   async isBoardsExist(id: number) {
     return await this.boardsRepository.exist({ where: { id } });
+  }
+
+  async increaseViewsAddQueue(id: number) {
+    const eventName = `increasedViews_${id}-${uuid()}`;
+
+    await this.boardsQueue.add(
+      'increaseViews',
+      {
+        boardsId: id,
+      },
+      { removeOnComplete: true, removeOnFail: true, lifo: true },
+    );
+    return this.waitTaskFinish(eventName, 1);
+  }
+
+  async increaseViews(id: number, eventName: string) {
+    try {
+      const board = await this.findOne(id);
+      board.views += 1;
+      await this.boardsRepository.update(id, {
+        views: board.views,
+      });
+      // 성공 했을경우 eventEmitter에 성공 이벤트 발생
+      this.eventEmitter.emit(eventName, {
+        success: true,
+        exception: null,
+      });
+    } catch (error) {
+      // 실패 했을경우 eventEmitter에 실패 이벤트 발생
+      this.eventEmitter.emit(eventName, {
+        success: false,
+        exception: new InternalServerErrorException(
+          `${ErrorMessage.REQUEST_INTERNAL_SERVER_ERROR}`,
+        ),
+      });
+    }
+  }
+  /*
+  이벤트 이름과 timout을 받아서 해당 이벤트가 발생할 때까지 기다리는 함수
+  타임아웃시 이벤트 리스너 제거, Promise reject 처리 후 예외 메세지 반환
+  성공하면 eventName이벤트가 발생될 때 호출되는데 성공 여부/예외를 파라미터로 받음
+  //이벤트 발생시 타임아웃 타이머 취소, 리스너 제거
+  //성공시 Promise resolve, 실패시 reject
+  */
+  private async waitTaskFinish(eventName: string, timeout: number) {
+    //eventName에 해당하는 작업이 끝났는지 안끝났는지 여부를 Promise resolve/reject로 판단
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        this.eventEmitter.removeAllListeners(eventName);
+        resolve(generateMessageObject(CommonSuccessMessage.SUCCESS));
+        // 시간이 다 지났는데도 Queue에서 빠져나오지 못했을 경우 에러 메세지 반환
+        reject(generateMessageObject(ErrorMessage.REQUEST_TIMEOUT));
+      }, timeout * 1000);
+      console.log('타이머', timer);
+
+      const listener = ({
+        success,
+        exception,
+      }: {
+        success: boolean;
+        exception: HttpException;
+      }) => {
+        clearTimeout(timer);
+        this.eventEmitter.removeAllListeners(eventName);
+        success
+          ? resolve(generateMessageObject(CommonSuccessMessage.UPDATED))
+          : reject(exception);
+      };
+
+      this.eventEmitter.addListener(eventName, listener);
+    });
   }
 }
