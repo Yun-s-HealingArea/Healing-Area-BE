@@ -6,10 +6,19 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Likes } from './entities/likes.entity';
 import { BoardsModule } from '../boards/boards.module';
 import { UsersModule } from '../users/users.module';
+import { BullModule } from '@nestjs/bull';
+import { LikesConsumer } from './likes.consumer';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Likes]), BoardsModule, UsersModule],
+  imports: [
+    TypeOrmModule.forFeature([Likes]),
+    BoardsModule,
+    UsersModule,
+    BullModule.registerQueueAsync({
+      name: 'likes-queue',
+    }),
+  ],
   controllers: [LikesController],
-  providers: [LikesService, LikesRepository],
+  providers: [LikesService, LikesRepository, LikesConsumer],
 })
 export class LikesModule {}
