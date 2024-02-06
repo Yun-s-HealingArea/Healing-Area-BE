@@ -8,10 +8,12 @@
 <img alt="" src="https://img.shields.io/badge/postgreSQL-4169E1?style=flat&logo=postgreSQL&logoColor=white"/>
 <img alt="" src="https://img.shields.io/badge/TypeORM 0.3.17-880000?style=flat&logo=&logoColor=white"/>
 <img alt="" src="https://img.shields.io/badge/Docker-2496ED?style=flat&logo=Docker&logoColor=white"/>
+<img alt="" src="https://img.shields.io/badge/Redis-DC382D?style=flat&logo=Redis&logoColor=white"/>
 
 ## 개발환경 설치 및 실행 가이드
 > 로컬 포트 : 8000  
-> DB 포트 : 5432
+> DB 포트 : 5432  
+> Redis 포트 : 6379
 
 차례대로 따라해주세요.
 
@@ -21,17 +23,9 @@
 
 - #### .env 파일 생성
 - .env 파일은 루트에 위치해야 합니다.
-- .env 파일은 아래의 .env 구성을 참고하여 작성해주세요.
-> POSTGRES_HOST=host.docker.internal
-POSTGRES_PORT=5432
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_DATABASE=postgres
-PORT=8000
-NODE_ENV=DEV
-HEALING_AREA_URL=http://localhost:8000/api/v1
-TYPEORM_SEEDING_FACTORIES=src/seed/factories/**/*{.ts,.js}
-TYPEORM_SEEDING_SEEDS=src/seed/seeders/**/*{.ts,.js}
+- .env 파일은 .env.example 구성을 참고하여 작성해주세요.
+
+
 
 - #### 패키지 설치 
 > npm install -g pnpm  
