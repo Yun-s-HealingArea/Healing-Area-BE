@@ -1,16 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  GetObjectCommand,
-  PutObjectCommand,
-  S3Client,
-} from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { CloudFrontClient } from '@aws-sdk/client-cloudfront';
+import { getSignedUrl } from '@aws-sdk/cloudfront-signer';
 
 @Injectable()
 export class UploadService {
   // UploadService 인스턴스가 생성 될 때 AWS S3 클라이언트를 초기화 해버림.
   s3Client: S3Client;
+  cloudfrontClient: CloudFrontClient;
 
   constructor(private configService: ConfigService) {
     // AWS S3 클라이언트 초기화. 환경 설정 정보를 사용하여 AWS 리전, Access Key, Secret Key를 설정.
@@ -20,6 +18,9 @@ export class UploadService {
         accessKeyId: this.configService.get('AWS_S3_ACCESS_KEY'), // Access Key
         secretAccessKey: this.configService.get('AWS_S3_SECRET_ACCESS_KEY'), // Secret Key
       },
+    });
+    this.cloudfrontClient = new CloudFrontClient({
+      region: this.configService.get('AWS_REGION'), // AWS Region
     });
   }
 
@@ -63,12 +64,19 @@ export class UploadService {
   ): Promise<string | string[]> {
     // if (Array.isArray(fileName)) {
     // } else {
-    const command = new GetObjectCommand({
-      Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
-      Key: folderName + imageFileURL,
-    });
-    return await getSignedUrl(this.s3Client, command, {
-      expiresIn: this.configService.get('AWS_S3_PRESIGNED_URL_EXPIRES_IN'),
+    // const command = new GetObjectCommand({
+    //   Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
+    //   Key: folderName + imageFileURL,
+    // });
+    const cloueFrontDomain = this.configService.get(
+      'AWS_CLOUDFRONT_DOMAIN_NAME',
+    );
+    console.log(cloueFrontDomain, folderName, imageFileURL);
+    return getSignedUrl({
+      url: `${cloueFrontDomain}/${folderName}${imageFileURL}`,
+      keyPairId: this.configService.get('AWS_CLOUDFRONT_KEY_PAIR_ID'),
+      privateKey: this.configService.get('AWS_CLOUDFRONT_PRIVATE_KEY'),
+      dateLessThan: this.configService.get('AWS_S3_PRESIGNED_URL_EXPIRES_IN'),
     });
     // }
     //   // async getPresignedURL(folderName: string, fileName: string): Promise<string> {

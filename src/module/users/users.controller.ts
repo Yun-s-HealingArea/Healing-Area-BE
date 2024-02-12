@@ -12,7 +12,13 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { PaginateDTO } from '../../common/dto/paginate.dto';
 import { QueryParameterDTO } from '../../common/dto/query.parameter.dto';
 import { generateItemsObject } from '../../common/function/generate.items.object';
@@ -40,9 +46,7 @@ export class UsersController {
     return this.userService.findAll({
       page: paginateDTO.page,
       limit: paginateDTO.limit,
-      route:
-        this.configService.get('HEALING_AREA_URL') +
-        this.configService.get('AWS_S3_BUCKET_USERS_RESOURCE_FOLDER_NAME'),
+      route: this.configService.get('HEALING_AREA_URL') + 'users',
     });
   }
 
@@ -62,6 +66,10 @@ export class UsersController {
     summary: '회원 가입',
     description:
       '회원 가입을 수행한다. 비밀번호는 영문+숫자+특수기호 16자 이하의 문자열이며 각각 1개 이상 포함되어야 한다.',
+  })
+  @ApiBody({ type: CreateUserDTO })
+  @ApiBadRequestResponse({
+    description: 'email이 중복되거나 password가 조건에 맞지 않을 경우',
   })
   async register(@Body() createUserDto: CreateUserDTO) {
     return this.userService.create(createUserDto);
