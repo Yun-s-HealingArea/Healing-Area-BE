@@ -171,7 +171,7 @@ export class BoardsService {
     );
     return this.waitTaskFinish(eventName, 1);
   }
-
+  //TODO: Event Emitter를 공통 함수로 빼도 괜찮지 않을까?
   async increaseViews(id: number, eventName: string) {
     try {
       const board = await this.findOne(id);

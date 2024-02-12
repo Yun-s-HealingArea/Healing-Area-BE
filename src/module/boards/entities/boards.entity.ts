@@ -10,10 +10,11 @@ import { AbstractEntity } from '../../../common/abstract/abstract.entity';
 import { Comments } from '../../comments/entities/comments.entity';
 import { Users } from '../../users/entities/users.entity';
 import { Likes } from '../../likes/entities/likes.entity';
+import { IBoards } from '../interface/boards.interface';
 
 @Entity()
 @Index(['id', 'title'])
-export class Boards extends AbstractEntity {
+export class Boards extends AbstractEntity implements IBoards {
   @Column({ type: 'varchar', length: 100 })
   title: string;
 
