@@ -57,7 +57,7 @@ export class UsersController {
     return generateItemsObject(await this.userService.findOne(+params.id));
   }
 
-  @Post('register')
+  @Post()
   @ApiOperation({
     summary: '회원 가입',
     description:
@@ -84,7 +84,7 @@ export class UsersController {
   @ApiOperation({
     summary: '유저 정보 삭제 (회원 탈퇴)',
     description:
-      'param으로 들어온 userId에 해당하는 유저의 정보를 논리 삭제(soft delete) 한다. (미구현)',
+      'param으로 들어온 userId에 해당하는 유저의 정보를 논리 삭제(soft delete) 한다.',
   })
   async remove(@Param() params: QueryParameterDTO) {
     return this.userService.remove(+params.id);
