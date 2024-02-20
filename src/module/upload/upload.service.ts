@@ -68,12 +68,13 @@ export class UploadService {
     //   Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
     //   Key: folderName + imageFileURL,
     // });
-    const cloueFrontDomain = this.configService.get(
+    const cloudFrontDomain = this.configService.get(
       'AWS_CLOUDFRONT_DOMAIN_NAME',
     );
-    console.log(cloueFrontDomain, folderName, imageFileURL);
+
+    console.log(cloudFrontDomain, folderName, imageFileURL);
     return getSignedUrl({
-      url: `${cloueFrontDomain}/${folderName}${imageFileURL}`,
+      url: `${cloudFrontDomain}/${folderName}${imageFileURL}`,
       keyPairId: this.configService.get('AWS_CLOUDFRONT_KEY_PAIR_ID'),
       privateKey: this.configService.get('AWS_CLOUDFRONT_PRIVATE_KEY'),
       dateLessThan: this.configService.get('AWS_S3_PRESIGNED_URL_EXPIRES_IN'),
