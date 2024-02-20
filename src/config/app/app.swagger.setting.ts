@@ -25,6 +25,9 @@ export function appSwaggerSetting<T extends INestApplication>(app: T): void {
       'Authorization',
     )
     .addServer('https://www.yun-healing-area.store')
+    .addServer(
+      'https://port-0-healing-area-be-17xco2nlsugtxc4.sel5.cloudtype.app',
+    )
     .addServer('http://localhost:8000')
     .build();
   const document = SwaggerModule.createDocument(app, config);
