@@ -72,7 +72,12 @@ export class UploadService {
       'AWS_CLOUDFRONT_DOMAIN_NAME',
     );
 
-    console.log(cloudFrontDomain, folderName, imageFileURL);
+    console.log(
+      cloudFrontDomain,
+      folderName,
+      imageFileURL,
+      this.configService.get('AWS_CLOUDFRONT_PRIVATE_KEY'),
+    );
     return getSignedUrl({
       url: `${cloudFrontDomain}/${folderName}${imageFileURL}`,
       keyPairId: this.configService.get('AWS_CLOUDFRONT_KEY_PAIR_ID'),
