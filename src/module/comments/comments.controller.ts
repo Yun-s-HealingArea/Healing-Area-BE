@@ -78,7 +78,7 @@ export class CommentsController {
     return this.commentsService.findAll({
       page: paginateDTO.page,
       limit: paginateDTO.limit,
-      route: this.configService.get('HEALING_AREA_URL') + '/comments',
+      route: this.configService.get('HEALING_AREA_URL') + 'comments',
     });
   }
 
